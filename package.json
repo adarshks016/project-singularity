@@ -1,0 +1,18 @@
+{
+  "name": "project-singularity",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Focus timer, mock tracker and study log for competitive exam prep.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.4.10"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4"
+  }
+}

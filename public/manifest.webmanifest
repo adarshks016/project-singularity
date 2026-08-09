@@ -1,0 +1,13 @@
+{
+  "name": "Project Singularity",
+  "short_name": "Singularity",
+  "description": "Focus timer, mock tracker and study log.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F7F1E6",
+  "theme_color": "#E9E1D2",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

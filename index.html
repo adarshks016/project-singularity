@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Project Singularity</title>
+<meta name="description" content="Focus timer, mock tracker and study log for competitive exams.">
+<meta name="theme-color" content="#E9E1D2">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=melodrama@400,500,600,700&f[]=chillax@400,500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="head">
+  <div class="head-in">
+    <div class="brand">
+      <svg viewBox="0 0 300 300" aria-hidden="true">
+        <path d="M 115.7 39.2 C 140.7 32.0, 175.0 42.2, 200.3 54.6 C 225.6 67.0, 259.6 89.2, 267.5 113.7 C 275.3 138.1, 261.1 176.2, 247.5 201.4 C 233.8 226.7, 210.2 258.1, 185.7 265.3 C 161.1 272.4, 125.2 257.7, 100.2 244.4 C 75.2 231.1, 44.1 209.8, 35.9 185.3 C 27.6 160.8, 37.2 121.9, 50.5 97.5 C 63.8 73.1, 90.7 46.3, 115.7 39.2 Z"
+              fill="#BE5103" opacity=".14"/>
+        <path d="M 115.7 39.2 C 140.7 32.0, 175.0 42.2, 200.3 54.6 C 225.6 67.0, 259.6 89.2, 267.5 113.7 C 275.3 138.1, 261.1 176.2, 247.5 201.4 C 233.8 226.7, 210.2 258.1, 185.7 265.3 C 161.1 272.4, 125.2 257.7, 100.2 244.4 C 75.2 231.1, 44.1 209.8, 35.9 185.3 C 27.6 160.8, 37.2 121.9, 50.5 97.5 C 63.8 73.1, 90.7 46.3, 115.7 39.2 Z"
+              fill="none" stroke="#BE5103" stroke-width="16"/>
+      </svg>
+      <div><b>Project Singularity</b><small>Focus · Mocks · Notes</small></div>
+    </div>
+    <button class="bell acct" id="acct" type="button" aria-label="Sign in to sync" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 20c0-3.6 3-6 6.5-6s6.5 2.4 6.5 6"/></svg>
+      <i class="dot" id="acct-dot" hidden></i>
+    </button>
+    <button class="bell" id="bell" type="button" aria-label="Notifications">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a5.5 5.5 0 0 0-5.5 5.5c0 4-1.5 5.2-2.2 5.9a.6.6 0 0 0 .4 1h14.6a.6.6 0 0 0 .4-1c-.7-.7-2.2-1.9-2.2-5.9A5.5 5.5 0 0 0 12 3z"/><path d="M10 18.5a2 2 0 0 0 4 0"/></svg>
+      <i class="dot" id="bell-dot" hidden></i>
+    </button>
+    <div class="notif" id="notif" hidden></div>
+    <nav class="tabs" id="tabs">
+      <button type="button" data-t="timer" class="on">Timer</button>
+      <button type="button" data-t="mocks">Mocks</button>
+      <button type="button" data-t="analytics">Analytics</button>
+      <button type="button" data-t="watch">Watch</button>
+      <button type="button" data-t="apps">Exams applied</button>
+      <button type="button" data-t="notes">Notes</button>
+      <button type="button" data-t="data">Backup</button>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ===== TIMER ===== -->
+<div class="panel on" id="p-timer">
+  <div class="scene t-sunset">
+    <svg class="scene-svg" viewBox="0 0 1440 820" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop class="s1" offset="0%" stop-color="#A6C4D3"/><stop class="s2" offset="26%" stop-color="#CFD5C3"/>
+          <stop class="s3" offset="48%" stop-color="#E8D3B0"/><stop class="s4" offset="70%" stop-color="#EFC7A6"/><stop class="s5" offset="100%" stop-color="#DCACC0"/>
+        </linearGradient>
+        <radialGradient id="glow" cx="50%" cy="58%" r="46%">
+          <stop offset="0%" class="g1" stop-color="#FFE2BE" stop-opacity=".7"/><stop offset="100%" class="g2" stop-color="#FFE2BE" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch"/>
+          <feColorMatrix type="saturate" values="0"/></filter>
+        <filter id="soft"><feGaussianBlur stdDeviation="16"/></filter>
+        <filter id="softer"><feGaussianBlur stdDeviation="30"/></filter>
+      </defs>
+
+      <rect width="1440" height="820" fill="url(#sky)"/>
+      <g class="stars" fill="#FFF6E2"><circle cx="926" cy="286" r="2.1" opacity="0.86"><animate attributeName="opacity" values="0.86;0.21;0.86" dur="4.1s" repeatCount="indefinite"/></circle><circle cx="1202" cy="97" r="1.0" opacity="0.68"><animate attributeName="opacity" values="0.68;0.17;0.68" dur="4.9s" repeatCount="indefinite"/></circle><circle cx="381" cy="48" r="1.4" opacity="0.44"><animate attributeName="opacity" values="0.44;0.11;0.44" dur="4.5s" repeatCount="indefinite"/></circle><circle cx="1420" cy="324" r="0.8" opacity="0.99"><animate attributeName="opacity" values="0.99;0.25;0.99" dur="6.3s" repeatCount="indefinite"/></circle><circle cx="1339" cy="378" r="1.7" opacity="0.45"><animate attributeName="opacity" values="0.45;0.11;0.45" dur="2.3s" repeatCount="indefinite"/></circle><circle cx="1082" cy="32" r="0.8" opacity="0.47"><animate attributeName="opacity" values="0.47;0.12;0.47" dur="3.2s" repeatCount="indefinite"/></circle><circle cx="61" cy="398" r="1.4" opacity="0.64"><animate attributeName="opacity" values="0.64;0.16;0.64" dur="5.8s" repeatCount="indefinite"/></circle><circle cx="1063" cy="119" r="1.7" opacity="0.67"><animate attributeName="opacity" values="0.67;0.17;0.67" dur="5.0s" repeatCount="indefinite"/></circle><circle cx="936" cy="335" r="1.1" opacity="1.0"><animate attributeName="opacity" values="1.0;0.25;1.0" dur="6.5s" repeatCount="indefinite"/></circle><circle cx="170" cy="362" r="1.1" opacity="0.84"><animate attributeName="opacity" values="0.84;0.21;0.84" dur="4.4s" repeatCount="indefinite"/></circle><circle cx="60" cy="35" r="1.6" opacity="0.42"><animate attributeName="opacity" values="0.42;0.1;0.42" dur="2.7s" repeatCount="indefinite"/></circle><circle cx="595" cy="197" r="0.8" opacity="0.36"><animate attributeName="opacity" values="0.36;0.09;0.36" dur="5.1s" repeatCount="indefinite"/></circle><circle cx="437" cy="107" r="2.2" opacity="0.38"><animate attributeName="opacity" values="0.38;0.1;0.38" dur="3.8s" repeatCount="indefinite"/></circle><circle cx="813" cy="214" r="0.8" opacity="0.76"><animate attributeName="opacity" values="0.76;0.19;0.76" dur="5.5s" repeatCount="indefinite"/></circle><circle cx="552" cy="172" r="0.8" opacity="0.57"><animate attributeName="opacity" values="0.57;0.14;0.57" dur="6.3s" repeatCount="indefinite"/></circle><circle cx="241" cy="68" r="1.1" opacity="0.42"><animate attributeName="opacity" values="0.42;0.1;0.42" dur="2.5s" repeatCount="indefinite"/></circle><circle cx="997" cy="90" r="1.8" opacity="0.47"><animate attributeName="opacity" values="0.47;0.12;0.47" dur="4.4s" repeatCount="indefinite"/></circle><circle cx="268" cy="214" r="1.7" opacity="0.43"><animate attributeName="opacity" values="0.43;0.11;0.43" dur="4.0s" repeatCount="indefinite"/></circle><circle cx="435" cy="0" r="1.1" opacity="0.98"><animate attributeName="opacity" values="0.98;0.24;0.98" dur="5.7s" repeatCount="indefinite"/></circle><circle cx="622" cy="10" r="1.0" opacity="0.61"><animate attributeName="opacity" values="0.61;0.15;0.61" dur="5.9s" repeatCount="indefinite"/></circle><circle cx="1314" cy="295" r="0.9" opacity="0.99"><animate attributeName="opacity" values="0.99;0.25;0.99" dur="3.1s" repeatCount="indefinite"/></circle><circle cx="528" cy="4" r="1.9" opacity="0.56"><animate attributeName="opacity" values="0.56;0.14;0.56" dur="3.5s" repeatCount="indefinite"/></circle><circle cx="150" cy="38" r="0.8" opacity="0.73"><animate attributeName="opacity" values="0.73;0.18;0.73" dur="3.2s" repeatCount="indefinite"/></circle><circle cx="1231" cy="188" r="1.3" opacity="0.64"><animate attributeName="opacity" values="0.64;0.16;0.64" dur="6.3s" repeatCount="indefinite"/></circle><circle cx="990" cy="426" r="1.6" opacity="0.91"><animate attributeName="opacity" values="0.91;0.23;0.91" dur="3.0s" repeatCount="indefinite"/></circle><circle cx="315" cy="159" r="2.2" opacity="0.88"><animate attributeName="opacity" values="0.88;0.22;0.88" dur="3.3s" repeatCount="indefinite"/></circle><circle cx="388" cy="81" r="1.9" opacity="0.96"><animate attributeName="opacity" values="0.96;0.24;0.96" dur="3.0s" repeatCount="indefinite"/></circle><circle cx="795" cy="247" r="1.7" opacity="0.62"><animate attributeName="opacity" values="0.62;0.15;0.62" dur="2.6s" repeatCount="indefinite"/></circle><circle cx="79" cy="262" r="2.2" opacity="0.5"><animate attributeName="opacity" values="0.5;0.12;0.5" dur="5.2s" repeatCount="indefinite"/></circle><circle cx="526" cy="215" r="2.0" opacity="0.74"><animate attributeName="opacity" values="0.74;0.18;0.74" dur="3.5s" repeatCount="indefinite"/></circle><circle cx="359" cy="368" r="2.3" opacity="0.43"><animate attributeName="opacity" values="0.43;0.11;0.43" dur="4.3s" repeatCount="indefinite"/></circle><circle cx="1338" cy="315" r="1.7" opacity="0.53"><animate attributeName="opacity" values="0.53;0.13;0.53" dur="6.1s" repeatCount="indefinite"/></circle><circle cx="417" cy="383" r="0.7" opacity="0.52"><animate attributeName="opacity" values="0.52;0.13;0.52" dur="4.1s" repeatCount="indefinite"/></circle><circle cx="123" cy="23" r="1.0" opacity="0.59"><animate attributeName="opacity" values="0.59;0.15;0.59" dur="4.7s" repeatCount="indefinite"/></circle><circle cx="269" cy="47" r="1.3" opacity="0.93"><animate attributeName="opacity" values="0.93;0.23;0.93" dur="6.4s" repeatCount="indefinite"/></circle><circle cx="1345" cy="375" r="1.8" opacity="0.73"><animate attributeName="opacity" values="0.73;0.18;0.73" dur="2.8s" repeatCount="indefinite"/></circle><circle cx="71" cy="9" r="1.5" opacity="0.58"><animate attributeName="opacity" values="0.58;0.14;0.58" dur="3.5s" repeatCount="indefinite"/></circle><circle cx="68" cy="10" r="1.7" opacity="0.4"><animate attributeName="opacity" values="0.4;0.1;0.4" dur="2.5s" repeatCount="indefinite"/></circle><circle cx="637" cy="163" r="0.9" opacity="0.4"><animate attributeName="opacity" values="0.4;0.1;0.4" dur="4.1s" repeatCount="indefinite"/></circle><circle cx="753" cy="377" r="0.8" opacity="0.96"><animate attributeName="opacity" values="0.96;0.24;0.96" dur="5.4s" repeatCount="indefinite"/></circle><circle cx="265" cy="406" r="2.2" opacity="0.57"><animate attributeName="opacity" values="0.57;0.14;0.57" dur="2.6s" repeatCount="indefinite"/></circle><circle cx="969" cy="39" r="2.1" opacity="0.62"><animate attributeName="opacity" values="0.62;0.15;0.62" dur="5.6s" repeatCount="indefinite"/></circle><circle cx="1023" cy="293" r="0.7" opacity="0.78"><animate attributeName="opacity" values="0.78;0.2;0.78" dur="3.8s" repeatCount="indefinite"/></circle><circle cx="25" cy="311" r="0.8" opacity="0.41"><animate attributeName="opacity" values="0.41;0.1;0.41" dur="2.7s" repeatCount="indefinite"/></circle><circle cx="526" cy="213" r="1.9" opacity="0.6"><animate attributeName="opacity" values="0.6;0.15;0.6" dur="5.4s" repeatCount="indefinite"/></circle><circle cx="1189" cy="234" r="1.4" opacity="0.89"><animate attributeName="opacity" values="0.89;0.22;0.89" dur="2.6s" repeatCount="indefinite"/></circle><circle cx="1053" cy="15" r="1.2" opacity="0.41"><animate attributeName="opacity" values="0.41;0.1;0.41" dur="2.3s" repeatCount="indefinite"/></circle><circle cx="1430" cy="57" r="1.5" opacity="0.75"><animate attributeName="opacity" values="0.75;0.19;0.75" dur="6.2s" repeatCount="indefinite"/></circle><circle cx="523" cy="5" r="1.3" opacity="0.44"><animate attributeName="opacity" values="0.44;0.11;0.44" dur="4.8s" repeatCount="indefinite"/></circle><circle cx="1061" cy="86" r="1.9" opacity="0.57"><animate attributeName="opacity" values="0.57;0.14;0.57" dur="6.2s" repeatCount="indefinite"/></circle><circle cx="1020" cy="123" r="1.2" opacity="0.78"><animate attributeName="opacity" values="0.78;0.2;0.78" dur="3.1s" repeatCount="indefinite"/></circle><circle cx="882" cy="411" r="2.0" opacity="0.94"><animate attributeName="opacity" values="0.94;0.23;0.94" dur="6.0s" repeatCount="indefinite"/></circle><circle cx="787" cy="112" r="1.6" opacity="0.56"><animate attributeName="opacity" values="0.56;0.14;0.56" dur="2.8s" repeatCount="indefinite"/></circle><circle cx="1016" cy="179" r="2.0" opacity="0.9"><animate attributeName="opacity" values="0.9;0.23;0.9" dur="5.3s" repeatCount="indefinite"/></circle><circle cx="566" cy="420" r="1.0" opacity="0.64"><animate attributeName="opacity" values="0.64;0.16;0.64" dur="3.4s" repeatCount="indefinite"/></circle><circle cx="438" cy="425" r="1.4" opacity="0.76"><animate attributeName="opacity" values="0.76;0.19;0.76" dur="4.3s" repeatCount="indefinite"/></circle><circle cx="645" cy="366" r="2.0" opacity="0.99"><animate attributeName="opacity" values="0.99;0.25;0.99" dur="4.1s" repeatCount="indefinite"/></circle><circle cx="152" cy="424" r="0.8" opacity="0.92"><animate attributeName="opacity" values="0.92;0.23;0.92" dur="2.4s" repeatCount="indefinite"/></circle><circle cx="575" cy="292" r="1.3" opacity="0.77"><animate attributeName="opacity" values="0.77;0.19;0.77" dur="4.6s" repeatCount="indefinite"/></circle><circle cx="1312" cy="69" r="1.3" opacity="0.47"><animate attributeName="opacity" values="0.47;0.12;0.47" dur="5.5s" repeatCount="indefinite"/></circle><circle cx="545" cy="121" r="1.9" opacity="0.87"><animate attributeName="opacity" values="0.87;0.22;0.87" dur="6.4s" repeatCount="indefinite"/></circle><circle cx="236" cy="228" r="0.9" opacity="0.7"><animate attributeName="opacity" values="0.7;0.17;0.7" dur="5.0s" repeatCount="indefinite"/></circle><circle cx="755" cy="39" r="1.8" opacity="0.48"><animate attributeName="opacity" values="0.48;0.12;0.48" dur="4.2s" repeatCount="indefinite"/></circle><circle cx="365" cy="365" r="0.7" opacity="0.66"><animate attributeName="opacity" values="0.66;0.17;0.66" dur="5.3s" repeatCount="indefinite"/></circle><circle cx="366" cy="115" r="1.1" opacity="0.57"><animate attributeName="opacity" values="0.57;0.14;0.57" dur="5.2s" repeatCount="indefinite"/></circle><circle cx="1065" cy="256" r="1.7" opacity="0.84"><animate attributeName="opacity" values="0.84;0.21;0.84" dur="3.9s" repeatCount="indefinite"/></circle><circle cx="1433" cy="114" r="0.8" opacity="0.96"><animate attributeName="opacity" values="0.96;0.24;0.96" dur="5.3s" repeatCount="indefinite"/></circle><circle cx="266" cy="230" r="1.4" opacity="0.76"><animate attributeName="opacity" values="0.76;0.19;0.76" dur="6.1s" repeatCount="indefinite"/></circle><circle cx="771" cy="281" r="1.6" opacity="0.92"><animate attributeName="opacity" values="0.92;0.23;0.92" dur="5.6s" repeatCount="indefinite"/></circle><circle cx="702" cy="237" r="1.2" opacity="0.99"><animate attributeName="opacity" values="0.99;0.25;0.99" dur="2.6s" repeatCount="indefinite"/></circle><circle cx="1314" cy="367" r="0.9" opacity="0.51"><animate attributeName="opacity" values="0.51;0.13;0.51" dur="3.9s" repeatCount="indefinite"/></circle><circle cx="179" cy="158" r="1.6" opacity="0.86"><animate attributeName="opacity" values="0.86;0.21;0.86" dur="3.6s" repeatCount="indefinite"/></circle><circle cx="32" cy="178" r="1.5" opacity="0.37"><animate attributeName="opacity" values="0.37;0.09;0.37" dur="3.7s" repeatCount="indefinite"/></circle><circle cx="863" cy="393" r="1.1" opacity="0.95"><animate attributeName="opacity" values="0.95;0.24;0.95" dur="3.1s" repeatCount="indefinite"/></circle><circle cx="131" cy="219" r="2.0" opacity="0.46"><animate attributeName="opacity" values="0.46;0.12;0.46" dur="3.6s" repeatCount="indefinite"/></circle><circle cx="287" cy="240" r="0.9" opacity="0.69"><animate attributeName="opacity" values="0.69;0.17;0.69" dur="5.3s" repeatCount="indefinite"/></circle><circle cx="1388" cy="352" r="1.4" opacity="0.92"><animate attributeName="opacity" values="0.92;0.23;0.92" dur="4.7s" repeatCount="indefinite"/></circle><circle cx="1411" cy="44" r="1.9" opacity="0.64"><animate attributeName="opacity" values="0.64;0.16;0.64" dur="4.6s" repeatCount="indefinite"/></circle><circle cx="1150" cy="327" r="1.0" opacity="0.68"><animate attributeName="opacity" values="0.68;0.17;0.68" dur="6.1s" repeatCount="indefinite"/></circle><circle cx="525" cy="159" r="1.8" opacity="0.97"><animate attributeName="opacity" values="0.97;0.24;0.97" dur="5.9s" repeatCount="indefinite"/></circle><circle cx="1248" cy="106" r="1.2" opacity="0.44"><animate attributeName="opacity" values="0.44;0.11;0.44" dur="4.5s" repeatCount="indefinite"/></circle><circle cx="559" cy="293" r="1.5" opacity="0.62"><animate attributeName="opacity" values="0.62;0.15;0.62" dur="2.7s" repeatCount="indefinite"/></circle><circle cx="10" cy="309" r="1.3" opacity="0.7"><animate attributeName="opacity" values="0.7;0.17;0.7" dur="2.4s" repeatCount="indefinite"/></circle><circle cx="820" cy="278" r="2.0" opacity="0.72"><animate attributeName="opacity" values="0.72;0.18;0.72" dur="4.3s" repeatCount="indefinite"/></circle><circle cx="1415" cy="85" r="0.8" opacity="0.7"><animate attributeName="opacity" values="0.7;0.17;0.7" dur="4.0s" repeatCount="indefinite"/></circle><circle cx="827" cy="137" r="1.1" opacity="0.67"><animate attributeName="opacity" values="0.67;0.17;0.67" dur="3.7s" repeatCount="indefinite"/></circle><circle cx="975" cy="268" r="1.2" opacity="0.47"><animate attributeName="opacity" values="0.47;0.12;0.47" dur="4.9s" repeatCount="indefinite"/></circle><circle cx="532" cy="66" r="1.8" opacity="0.99"><animate attributeName="opacity" values="0.99;0.25;0.99" dur="2.4s" repeatCount="indefinite"/></circle><circle cx="318" cy="116" r="0.7" opacity="0.53"><animate attributeName="opacity" values="0.53;0.13;0.53" dur="5.3s" repeatCount="indefinite"/></circle><circle cx="500" cy="317" r="1.5" opacity="0.67"><animate attributeName="opacity" values="0.67;0.17;0.67" dur="4.7s" repeatCount="indefinite"/></circle></g>
+      <ellipse class="milky" cx="500" cy="180" rx="480" ry="90" fill="#B9C2E8" filter="url(#softer)" transform="rotate(-14 500 180)"/>
+      <ellipse cx="720" cy="470" rx="640" ry="310" fill="url(#glow)"/>
+
+      <g class="sun"><circle cx="1075" cy="262" r="92" fill="#FFE7B8" filter="url(#soft)" opacity=".75"/>
+        <circle cx="1075" cy="262" r="44" fill="#FFF4DA"/></g>
+      <g class="moon"><path d="M1148 156 a48 48 0 1 0 26 92 a38 38 0 1 1 -26 -92 Z" fill="#F4EEDA"/>
+        <circle cx="1148" cy="200" r="86" fill="#EDE6D8" filter="url(#soft)" opacity=".28"/></g>
+
+      
+      
+
+      <g class="bow"><path d="M 420 780 A 300 300 0 0 1 1020 780" fill="none" stroke="#E0837C" stroke-width="14" stroke-linecap="round"/><path d="M 407 780 A 313 313 0 0 1 1033 780" fill="none" stroke="#E2A56C" stroke-width="14" stroke-linecap="round"/><path d="M 394 780 A 326 326 0 0 1 1046 780" fill="none" stroke="#DCC77C" stroke-width="14" stroke-linecap="round"/><path d="M 381 780 A 339 339 0 0 1 1059 780" fill="none" stroke="#93BE85" stroke-width="14" stroke-linecap="round"/><path d="M 368 780 A 352 352 0 0 1 1072 780" fill="none" stroke="#7FA8C9" stroke-width="14" stroke-linecap="round"/><path d="M 355 780 A 365 365 0 0 1 1085 780" fill="none" stroke="#8E8BC0" stroke-width="14" stroke-linecap="round"/><path d="M 342 780 A 378 378 0 0 1 1098 780" fill="none" stroke="#A98BC0" stroke-width="14" stroke-linecap="round"/></g>
+
+      <g class="hA" fill="#A48EB8"><rect x="-40" y="500" width="1520" height="360"/><ellipse cx="-120" cy="500" rx="231" ry="79"/><ellipse cx="142" cy="500" rx="196" ry="74"/><ellipse cx="394" cy="500" rx="202" ry="93"/><ellipse cx="637" cy="500" rx="254" ry="83"/><ellipse cx="894" cy="500" rx="245" ry="96"/><ellipse cx="1144" cy="500" rx="201" ry="105"/></g><g class="hB" fill="#8B79A6"><rect x="-40" y="572" width="1520" height="288"/><ellipse cx="-120" cy="572" rx="315" ry="120"/><ellipse cx="208" cy="572" rx="238" ry="124"/><ellipse cx="498" cy="572" rx="217" ry="120"/><ellipse cx="759" cy="572" rx="216" ry="98"/><ellipse cx="978" cy="572" rx="319" ry="92"/></g><g class="hC" fill="#74628C"><rect x="-40" y="646" width="1520" height="214"/><ellipse cx="-120" cy="646" rx="218" ry="145"/><ellipse cx="106" cy="646" rx="239" ry="147"/><ellipse cx="413" cy="646" rx="223" ry="89"/><ellipse cx="681" cy="646" rx="281" ry="100"/><ellipse cx="998" cy="646" rx="270" ry="84"/><ellipse cx="1321" cy="646" rx="279" ry="102"/></g><g class="gA" fill="#7E9366"><rect x="-40" y="716" width="1520" height="144"/><ellipse cx="-120" cy="716" rx="298" ry="107"/><ellipse cx="259" cy="716" rx="289" ry="117"/><ellipse cx="641" cy="716" rx="276" ry="99"/><ellipse cx="940" cy="716" rx="253" ry="124"/><ellipse cx="1262" cy="716" rx="240" ry="116"/></g><g class="gB" fill="#5F7B4F"><rect x="-40" y="782" width="1520" height="78"/><ellipse cx="-120" cy="782" rx="253" ry="79"/><ellipse cx="197" cy="782" rx="226" ry="96"/><ellipse cx="500" cy="782" rx="205" ry="90"/><ellipse cx="735" cy="782" rx="286" ry="79"/><ellipse cx="1036" cy="782" rx="252" ry="84"/><ellipse cx="1291" cy="782" rx="275" ry="62"/></g><g class="gC" fill="#4F6B4A"><rect x="-40" y="830" width="1520" height="30"/><ellipse cx="-120" cy="830" rx="340" ry="61"/><ellipse cx="302" cy="830" rx="387" ry="69"/><ellipse cx="698" cy="830" rx="283" ry="57"/><ellipse cx="1027" cy="830" rx="276" ry="43"/></g>
+      <path class="river" d="M700 700 C 680 742, 640 770, 585 792 L 880 792 C 812 768, 762 740, 742 700 Z"/>
+      <path class="river-hi" d="M712 712 C 700 746, 672 768, 636 786" fill="none" stroke-width="3"/>
+
+      <g class="leaf-a">
+        <ellipse cx="46" cy="96" rx="86" ry="40" transform="rotate(-22 46 96)"/>
+        <ellipse cx="150" cy="52" rx="74" ry="33" transform="rotate(14 150 52)"/>
+        <ellipse cx="70" cy="212" rx="92" ry="38" transform="rotate(28 70 212)"/>
+        <ellipse cx="196" cy="150" rx="66" ry="27" transform="rotate(-8 196 150)"/>
+        <ellipse cx="1400" cy="70" rx="88" ry="38" transform="rotate(18 1400 70)"/>
+        <ellipse cx="1288" cy="126" rx="74" ry="31" transform="rotate(-16 1288 126)"/>
+        <ellipse cx="1414" cy="200" rx="70" ry="30" transform="rotate(-30 1414 200)"/>
+      </g>
+      <g class="leaf-b">
+        <ellipse cx="24" cy="160" rx="70" ry="31" transform="rotate(8 24 160)"/>
+        <ellipse cx="128" cy="126" rx="56" ry="24" transform="rotate(-34 128 126)"/>
+        <ellipse cx="40" cy="300" rx="64" ry="26" transform="rotate(16 40 300)"/>
+        <ellipse cx="1348" cy="44" rx="60" ry="26" transform="rotate(-8 1348 44)"/>
+        <ellipse cx="1382" cy="286" rx="58" ry="24" transform="rotate(22 1382 286)"/>
+      </g>
+      <g class="stem" fill="none" stroke-width="5" opacity=".5">
+        <path d="M0 120 C 70 140, 140 130, 205 152"/><path d="M1440 40 C 1390 90, 1372 150, 1362 210"/>
+      </g>
+      <g class="fruit">
+        <circle cx="1352" cy="196" r="26"/><circle cx="1404" cy="212" r="27"/>
+        <circle cx="1330" cy="246" r="25"/><circle cx="1382" cy="258" r="28"/>
+        <circle cx="1426" cy="268" r="24"/><circle cx="1358" cy="304" r="26"/>
+        <circle cx="1408" cy="318" r="23"/>
+      </g>
+
+      <g class="flit flit-a" transform="translate(300 330)">
+        <ellipse class="wing" cx="-16" cy="-6" rx="26" ry="17" fill="#8FAE86" transform="rotate(-24 -16 -6)"/>
+        <ellipse class="wing" cx="16" cy="-6" rx="26" ry="17" fill="#8FAE86" transform="rotate(24 16 -6)"/>
+        <ellipse cx="-12" cy="14" rx="17" ry="11" fill="#5A4030" opacity=".8"/>
+        <ellipse cx="12" cy="14" rx="17" ry="11" fill="#5A4030" opacity=".8"/>
+        <rect x="-2.5" y="-14" width="5" height="30" rx="2.5" fill="#4A3524"/>
+      </g>
+      <g class="flit flit-b" transform="translate(380 720)">
+        <ellipse class="wing" cx="-18" cy="-6" rx="30" ry="19" fill="#F0E3CE" transform="rotate(-20 -18 -6)"/>
+        <ellipse class="wing" cx="18" cy="-6" rx="30" ry="19" fill="#F0E3CE" transform="rotate(20 18 -6)"/>
+        <ellipse cx="-13" cy="16" rx="19" ry="12" fill="#7A5A3E" opacity=".85"/>
+        <ellipse cx="13" cy="16" rx="19" ry="12" fill="#7A5A3E" opacity=".85"/>
+        <rect x="-3" y="-16" width="6" height="34" rx="3" fill="#4A3524"/>
+      </g>
+      <g class="flit flit-c" transform="translate(1060 470)">
+        <ellipse cx="-26" cy="-7" rx="34" ry="9" fill="#D8CDE4" opacity=".8" transform="rotate(-10 -26 -7)"/>
+        <ellipse cx="26" cy="-7" rx="34" ry="9" fill="#D8CDE4" opacity=".8" transform="rotate(10 26 -7)"/>
+        <ellipse cx="-22" cy="8" rx="28" ry="7" fill="#E8DFC8" opacity=".75"/>
+        <ellipse cx="22" cy="8" rx="28" ry="7" fill="#E8DFC8" opacity=".75"/>
+        <rect x="-2" y="-6" width="4" height="42" rx="2" fill="#6E5B44"/>
+      </g>
+
+      <rect width="1440" height="820" filter="url(#grain)" opacity=".16" style="mix-blend-mode:multiply"/>
+    </svg>
+
+    <div class="scene-inner">
+    <div class="modes" id="modes"></div>
+    <div class="dial" id="dial">
+      <svg viewBox="0 0 300 300" aria-hidden="true">
+        <defs>
+          <clipPath id="blobClip"><path d="M 115.7 39.2 C 140.7 32.0, 175.0 42.2, 200.3 54.6 C 225.6 67.0, 259.6 89.2, 267.5 113.7 C 275.3 138.1, 261.1 176.2, 247.5 201.4 C 233.8 226.7, 210.2 258.1, 185.7 265.3 C 161.1 272.4, 125.2 257.7, 100.2 244.4 C 75.2 231.1, 44.1 209.8, 35.9 185.3 C 27.6 160.8, 37.2 121.9, 50.5 97.5 C 63.8 73.1, 90.7 46.3, 115.7 39.2 Z"><animate class="morph" attributeName="d" dur="26s" repeatCount="indefinite" values="M 115.7 39.2 C 140.7 32.0, 175.0 42.2, 200.3 54.6 C 225.6 67.0, 259.6 89.2, 267.5 113.7 C 275.3 138.1, 261.1 176.2, 247.5 201.4 C 233.8 226.7, 210.2 258.1, 185.7 265.3 C 161.1 272.4, 125.2 257.7, 100.2 244.4 C 75.2 231.1, 44.1 209.8, 35.9 185.3 C 27.6 160.8, 37.2 121.9, 50.5 97.5 C 63.8 73.1, 90.7 46.3, 115.7 39.2 Z;M 117.4 44.7 C 144.7 36.1, 183.7 30.2, 206.8 42.3 C 230.0 54.3, 248.2 89.8, 256.4 117.1 C 264.5 144.3, 268.0 182.9, 255.7 205.7 C 243.3 228.6, 209.0 246.0, 182.2 254.2 C 155.4 262.3, 118.1 266.5, 94.8 254.7 C 71.5 242.8, 51.1 210.1, 42.5 183.3 C 33.9 156.4, 30.8 116.8, 43.3 93.7 C 55.8 70.6, 90.2 53.3, 117.4 44.7 Z;M 114.3 34.7 C 139.1 26.8, 177.4 38.1, 202.0 51.5 C 226.6 64.9, 253.8 90.1, 261.9 115.4 C 270.0 140.6, 263.2 177.9, 250.5 203.0 C 237.9 228.2, 211.3 259.0, 186.0 266.4 C 160.7 273.8, 123.1 261.2, 98.6 247.5 C 74.1 233.8, 46.7 209.0, 39.2 184.3 C 31.7 159.6, 41.0 124.0, 53.6 99.1 C 66.1 74.2, 89.6 42.7, 114.3 34.7 Z;M 115.7 39.2 C 140.7 32.0, 175.0 42.2, 200.3 54.6 C 225.6 67.0, 259.6 89.2, 267.5 113.7 C 275.3 138.1, 261.1 176.2, 247.5 201.4 C 233.8 226.7, 210.2 258.1, 185.7 265.3 C 161.1 272.4, 125.2 257.7, 100.2 244.4 C 75.2 231.1, 44.1 209.8, 35.9 185.3 C 27.6 160.8, 37.2 121.9, 50.5 97.5 C 63.8 73.1, 90.7 46.3, 115.7 39.2 Z"/></path></clipPath>
+          <linearGradient id="juice" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#F4A45C" stop-opacity=".5"/>
+            <stop offset="45%" stop-color="#E07B24" stop-opacity=".56"/>
+            <stop offset="100%" stop-color="#BE5103" stop-opacity=".62"/>
+          </linearGradient>
+          <linearGradient id="rest" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#B3B8DD" stop-opacity=".5"/>
+            <stop offset="45%" stop-color="#8E93C4" stop-opacity=".56"/>
+            <stop offset="100%" stop-color="#6C71A6" stop-opacity=".62"/>
+          </linearGradient>
+        </defs>
+        <path class="blob-glass" d="M 115.7 39.2 C 140.7 32.0, 175.0 42.2, 200.3 54.6 C 225.6 67.0, 259.6 89.2, 267.5 113.7 C 275.3 138.1, 261.1 176.2, 247.5 201.4 C 233.8 226.7, 210.2 258.1, 185.7 265.3 C 161.1 272.4, 125.2 257.7, 100.2 244.4 C 75.2 231.1, 44.1 209.8, 35.9 185.3 C 27.6 160.8, 37.2 121.9, 50.5 97.5 C 63.8 73.1, 90.7 46.3, 115.7 39.2 Z"><animate class="morph" attributeName="d" dur="26s" repeatCount="indefinite" values="M 115.7 39.2 C 140.7 32.0, 175.0 42.2, 200.3 54.6 C 225.6 67.0, 259.6 89.2, 267.5 113.7 C 275.3 138.1, 261.1 176.2, 247.5 201.4 C 233.8 226.7, 210.2 258.1, 185.7 265.3 C 161.1 272.4, 125.2 257.7, 100.2 244.4 C 75.2 231.1, 44.1 209.8, 35.9 185.3 C 27.6 160.8, 37.2 121.9, 50.5 97.5 C 63.8 73.1, 90.7 46.3, 115.7 39.2 Z;M 117.4 44.7 C 144.7 36.1, 183.7 30.2, 206.8 42.3 C 230.0 54.3, 248.2 89.8, 256.4 117.1 C 264.5 144.3, 268.0 182.9, 255.7 205.7 C 243.3 228.6, 209.0 246.0, 182.2 254.2 C 155.4 262.3, 118.1 266.5, 94.8 254.7 C 71.5 242.8, 51.1 210.1, 42.5 183.3 C 33.9 156.4, 30.8 116.8, 43.3 93.7 C 55.8 70.6, 90.2 53.3, 117.4 44.7 Z;M 114.3 34.7 C 139.1 26.8, 177.4 38.1, 202.0 51.5 C 226.6 64.9, 253.8 90.1, 261.9 115.4 C 270.0 140.6, 263.2 177.9, 250.5 203.0 C 237.9 228.2, 211.3 259.0, 186.0 266.4 C 160.7 273.8, 123.1 261.2, 98.6 247.5 C 74.1 233.8, 46.7 209.0, 39.2 184.3 C 31.7 159.6, 41.0 124.0, 53.6 99.1 C 66.1 74.2, 89.6 42.7, 114.3 34.7 Z;M 115.7 39.2 C 140.7 32.0, 175.0 42.2, 200.3 54.6 C 225.6 67.0, 259.6 89.2, 267.5 113.7 C 275.3 138.1, 261.1 176.2, 247.5 201.4 C 233.8 226.7, 210.2 258.1, 185.7 265.3 C 161.1 272.4, 125.2 257.7, 100.2 244.4 C 75.2 231.1, 44.1 209.8, 35.9 185.3 C 27.6 160.8, 37.2 121.9, 50.5 97.5 C 63.8 73.1, 90.7 46.3, 115.7 39.2 Z"/></path>
+        <g clip-path="url(#blobClip)">
+          <g id="liquid" transform="translate(0,300)">
+            <path id="wave-b" class="wave-b" opacity=".2" d="M -300 28 q 27.5 -8 55.0 0 t 55.0 0 q 27.5 -8 55.0 0 t 55.0 0 q 27.5 -8 55.0 0 t 55.0 0 q 27.5 -8 55.0 0 t 55.0 0 q 27.5 -8 55.0 0 t 55.0 0 q 27.5 -8 55.0 0 t 55.0 0 q 27.5 -8 55.0 0 t 55.0 0 q 27.5 -8 55.0 0 t 55.0 0 q 27.5 -8 55.0 0 t 55.0 0 L 600 388 L -300 388 Z" fill="#BE5103"/>
+            <path id="wave-a" class="wave-a" d="M -300 22 q 37.5 -11 75.0 0 t 75.0 0 q 37.5 -11 75.0 0 t 75.0 0 q 37.5 -11 75.0 0 t 75.0 0 q 37.5 -11 75.0 0 t 75.0 0 q 37.5 -11 75.0 0 t 75.0 0 q 37.5 -11 75.0 0 t 75.0 0 L 600 382 L -300 382 Z" fill="url(#juice)"/>
+          </g>
+        </g>
+        <path id="blob-outline" d="M 115.7 39.2 C 140.7 32.0, 175.0 42.2, 200.3 54.6 C 225.6 67.0, 259.6 89.2, 267.5 113.7 C 275.3 138.1, 261.1 176.2, 247.5 201.4 C 233.8 226.7, 210.2 258.1, 185.7 265.3 C 161.1 272.4, 125.2 257.7, 100.2 244.4 C 75.2 231.1, 44.1 209.8, 35.9 185.3 C 27.6 160.8, 37.2 121.9, 50.5 97.5 C 63.8 73.1, 90.7 46.3, 115.7 39.2 Z"><animate class="morph" attributeName="d" dur="26s" repeatCount="indefinite" values="M 115.7 39.2 C 140.7 32.0, 175.0 42.2, 200.3 54.6 C 225.6 67.0, 259.6 89.2, 267.5 113.7 C 275.3 138.1, 261.1 176.2, 247.5 201.4 C 233.8 226.7, 210.2 258.1, 185.7 265.3 C 161.1 272.4, 125.2 257.7, 100.2 244.4 C 75.2 231.1, 44.1 209.8, 35.9 185.3 C 27.6 160.8, 37.2 121.9, 50.5 97.5 C 63.8 73.1, 90.7 46.3, 115.7 39.2 Z;M 117.4 44.7 C 144.7 36.1, 183.7 30.2, 206.8 42.3 C 230.0 54.3, 248.2 89.8, 256.4 117.1 C 264.5 144.3, 268.0 182.9, 255.7 205.7 C 243.3 228.6, 209.0 246.0, 182.2 254.2 C 155.4 262.3, 118.1 266.5, 94.8 254.7 C 71.5 242.8, 51.1 210.1, 42.5 183.3 C 33.9 156.4, 30.8 116.8, 43.3 93.7 C 55.8 70.6, 90.2 53.3, 117.4 44.7 Z;M 114.3 34.7 C 139.1 26.8, 177.4 38.1, 202.0 51.5 C 226.6 64.9, 253.8 90.1, 261.9 115.4 C 270.0 140.6, 263.2 177.9, 250.5 203.0 C 237.9 228.2, 211.3 259.0, 186.0 266.4 C 160.7 273.8, 123.1 261.2, 98.6 247.5 C 74.1 233.8, 46.7 209.0, 39.2 184.3 C 31.7 159.6, 41.0 124.0, 53.6 99.1 C 66.1 74.2, 89.6 42.7, 114.3 34.7 Z;M 115.7 39.2 C 140.7 32.0, 175.0 42.2, 200.3 54.6 C 225.6 67.0, 259.6 89.2, 267.5 113.7 C 275.3 138.1, 261.1 176.2, 247.5 201.4 C 233.8 226.7, 210.2 258.1, 185.7 265.3 C 161.1 272.4, 125.2 257.7, 100.2 244.4 C 75.2 231.1, 44.1 209.8, 35.9 185.3 C 27.6 160.8, 37.2 121.9, 50.5 97.5 C 63.8 73.1, 90.7 46.3, 115.7 39.2 Z"/></path>
+      </svg>
+      <div class="dial-time"><span class="t" id="dial-time">25:00</span><span class="lbl" id="dial-label">Focus</span></div>
+    </div>
+    <div class="timer-actions">
+      <button class="btn" id="start-btn" type="button">Start</button>
+      <button class="btn ghost" id="stop-btn" type="button">Stop</button>
+      <button class="btn ghost" id="reset-btn" type="button">Reset</button>
+    </div>
+    <div class="subjects" id="subjects"></div>
+    <div class="timer-meta">
+      <select id="timer-exam" aria-label="Exam"></select>
+      <button class="tod" id="tod-btn" type="button"><i>☀</i><span id="tod-label">Day</span></button>
+      <span class="len"><label for="flen">Focus</label><input type="number" id="flen" min="5" max="180" step="5" value="25"><span>min</span></span>
+    </div>
+    <div class="water" id="water">
+      <button class="water-mini" id="water-mini" type="button" aria-label="Water intake">
+        <svg viewBox="0 0 24 30" aria-hidden="true">
+          <path class="cup" d="M4 3h16l-2 24H6L4 3z"/>
+          <clipPath id="miniclip"><path d="M4 3h16l-2 24H6L4 3z"/></clipPath>
+          <rect class="fill" id="mini-fill" clip-path="url(#miniclip)" x="2" y="6" width="20" height="24"/>
+        </svg><b id="mini-count">0</b></button>
+      <div class="water-full" id="water-full">
+        <div class="water-top"><span id="water-label">0 of 8 glasses</span>
+          <button class="water-undo" id="water-undo" type="button" aria-label="Remove one">−</button>
+          <button class="water-undo" id="water-hide" type="button" aria-label="Minimise">×</button></div>
+        <div class="glasses" id="glasses"></div>
+      </div>
+    </div>
+    <div class="dock" id="dock">
+      <button class="dock-toggle" id="dock-toggle" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14v-4h3l4-3v10l-4-3H4z"/><path d="M15.5 9.5a4 4 0 0 1 0 5"/><path d="M18 7a7.5 7.5 0 0 1 0 10"/></svg>
+        <span>Sound</span></button>
+      <div class="dock-body" id="dock-body" hidden>
+        <div class="amb" id="amb"></div>
+        <label class="vol"><span>Volume</span><input type="range" id="amb-vol" min="0" max="100" value="45"></label>
+        <div class="dock-sep"></div>
+        <label class="playlab" for="dock-url">Spotify or YouTube playlist</label>
+        <div class="dock-row">
+          <input type="text" id="dock-url" placeholder="Paste a link">
+          <button class="btn tiny" id="dock-go" type="button">Load</button>
+        </div>
+        <div id="dock-embed"></div>
+      </div>
+    </div>
+    <div class="strip">
+      <div><span class="v" id="f-today">0m</span><span class="l">Today</span></div>
+      <div><span class="v" id="f-sessions">0</span><span class="l">Sessions</span></div>
+      <div><span class="v" id="f-week">0m</span><span class="l">7 days</span></div>
+      <div><span class="v" id="f-break">0m</span><span class="l">Breaks</span></div>
+      <div><span class="v" id="f-streak">0</span><span class="l">Streak</span></div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MOCKS ===== -->
+<div class="panel" id="p-mocks">
+  <section class="band">
+    <div class="band-head"><h2>Exams</h2><span class="hint">Group your mocks by exam</span></div>
+    <div id="exam-list"></div>
+    <div class="newlaunch"><button class="btn" id="new-exam-open" type="button">+ New exam</button></div>
+    <div class="card pad" id="new-exam-card" hidden style="margin-top:12px">
+      <div class="cardhead"><h3>New exam</h3>
+        <button class="iconbtn" id="new-exam-close" type="button" aria-label="Close">×</button></div>
+      <div class="row">
+        <div class="field" style="flex:1 1 200px"><label for="new-exam">Exam name</label>
+          <input type="text" id="new-exam" placeholder="e.g. SSC CGL 2026, RRB NTPC" autocomplete="off"></div>
+        <div class="field"><label for="new-preset">Pattern</label>
+          <select id="new-preset"></select></div>
+        <button class="btn" id="add-exam" type="button">Add exam</button>
+      </div>
+      <div id="custom-builder" hidden style="margin-top:14px">
+        <span class="eyebrow">Custom sections</span>
+        <div id="custom-rows" style="margin-top:8px"></div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn ghost tiny" id="add-section" type="button">+ Add section</button>
+          <div class="field"><label for="cust-correct">Marks per correct</label><input type="number" id="cust-correct" value="2" step="0.25" style="width:82px"></div>
+          <div class="field"><label for="cust-penalty">Penalty per wrong</label><input type="number" id="cust-penalty" value="0.5" step="0.25" style="width:82px"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== ANALYTICS ===== -->
+<div class="panel" id="p-analytics">
+  <section class="band">
+    <div class="band-head"><h2>Analytics</h2>
+      <span class="hint"><select id="an-exam" aria-label="Exam for analytics"></select></span></div>
+    <div class="card tiles">
+      <div class="tile"><span class="eyebrow">Full mocks</span><span class="v" id="s-count">0</span><span class="sub">logged</span></div>
+      <div class="tile"><span class="eyebrow">Best</span><span class="v" id="s-best">—</span><span class="sub" id="s-best-sub">&nbsp;</span></div>
+      <div class="tile"><span class="eyebrow">Average</span><span class="v" id="s-avg">—</span><span class="sub">all full mocks</span></div>
+      <div class="tile"><span class="eyebrow">Last 5</span><span class="v" id="s-recent">—</span><span class="sub">recent form</span></div>
+      <div class="tile"><span class="eyebrow">Accuracy</span><span class="v" id="s-acc">—</span><span class="sub" id="s-acc-sub">&nbsp;</span></div>
+    </div>
+  </section>
+  <section class="band">
+    <div class="band-head"><h2>Section averages</h2>
+      <span class="hint"><select id="sec-scope"><option value="all">All mocks</option>
+        <option value="full">Full length only</option><option value="sectional">Sectional only</option></select></span></div>
+    <p class="status" id="sec-verdict" style="margin:0 0 10px"></p>
+    <div class="secgrid" id="secgrid"></div>
+  </section>
+  <section class="band">
+    <div class="band-head"><h2>Score trend</h2><span class="hint"><select id="trend-scope">
+        <option value="full">Full length</option><option value="sectional">Sectional</option></select></span></div>
+    <div class="card chart-wrap">
+      <div class="chart-legend" id="chart-legend"></div>
+      <div class="chart-box">
+        <svg class="chart" id="chart" viewBox="0 0 720 250" preserveAspectRatio="none" role="img" aria-label="Score trend"></svg>
+        <div class="chart-tip" id="chart-tip" hidden></div>
+      </div>
+    </div>
+  </section>
+  <section class="band">
+    <div class="band-head"><h2>Study time</h2><span class="hint">Focus only · breaks counted separately</span></div>
+    <div class="card pad">
+      <span class="eyebrow">Last 7 days</span>
+      <div class="week" id="week"></div>
+      <div style="margin-top:18px"><span class="eyebrow">By subject</span><div id="splits"></div></div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="band-head"><h2>History</h2><span class="hint"><span class="yearpick" id="hist-year"></span></span></div>
+    <div class="card pad">
+      <div class="hist-tiles">
+        <div><span class="eyebrow">Focused</span><b id="hist-focus">0m</b></div>
+        <div><span class="eyebrow">On breaks</span><b id="hist-break">0m</b></div>
+        <div><span class="eyebrow">Active days</span><b id="hist-days">0</b></div>
+        <div><span class="eyebrow">Per active day</span><b id="hist-avg">0m</b></div>
+      </div>
+      <div style="margin-top:20px"><span class="eyebrow">By month</span>
+        <div class="months" id="hist-months"></div>
+        <div class="mlegend"><span><i class="sw foc"></i>Focus</span><span><i class="sw brk"></i>Break</span></div>
+      </div>
+      <div style="margin-top:20px"><span class="eyebrow">Every day</span>
+        <div class="gridwrap"><div class="daygrid" id="hist-grid"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="band-head"><h2>Log time by hand</h2><span class="hint">For study done away from this timer</span></div>
+    <div class="card pad">
+      <div class="row">
+        <div class="field"><label for="bf-date">Date</label><input type="date" id="bf-date"></div>
+        <div class="field"><label for="bf-subj">Subject</label><select id="bf-subj"></select></div>
+        <div class="field"><label for="bf-kind">Type</label><select id="bf-kind">
+          <option value="focus">Focus</option><option value="break">Break</option></select></div>
+        <div class="field"><label for="bf-mins">Minutes</label><input type="number" id="bf-mins" min="1" max="1440" style="width:96px" placeholder="45"></div>
+        <button class="btn" id="add-session" type="button">Add</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== WATCH ===== -->
+<div class="panel" id="p-watch">
+  <section class="band">
+    <div class="band-head"><h2>Watch</h2><span class="hint">Study-with-me sessions and focus music</span></div>
+    <div class="card pad">
+      <div class="row">
+        <div class="field" style="flex:1 1 280px"><label for="vid-url">Add a YouTube link</label>
+          <input type="text" id="vid-url" placeholder="Paste any youtube.com or youtu.be link" autocomplete="off"></div>
+        <div class="field" style="flex:1 1 160px"><label for="vid-name">Label (optional)</label>
+          <input type="text" id="vid-name" placeholder="What is it" autocomplete="off"></div>
+        <button class="btn" id="vid-add" type="button">Add</button>
+      </div>
+    </div>
+    <div class="vidgrid" id="vidgrid" style="margin-top:12px"></div>
+  </section>
+</div>
+
+<!-- ===== APPLICATIONS ===== -->
+<div class="panel" id="p-apps">
+  <section class="band">
+    <div class="band-head"><h2>Exams applied</h2><span class="hint" id="apps-count">&nbsp;</span></div>
+    <div class="card pad">
+      <div class="row">
+        <div class="field" style="flex:1 1 220px"><label for="ap-name">Exam / post</label>
+          <input type="text" id="ap-name" placeholder="e.g. SSC CGL 2026, RRB NTPC CEN 05/2026" autocomplete="off"></div>
+        <div class="field"><label for="ap-stage">Stage</label><select id="ap-stage"></select></div>
+        <div class="field"><label for="ap-exam">Exam date</label><input type="date" id="ap-exam"></div>
+        <button class="btn" id="ap-add" type="button">Add</button>
+      </div>
+    </div>
+    <div id="apps-list" style="margin-top:12px"></div>
+  </section>
+</div>
+
+<!-- ===== NOTES ===== -->
+<div class="panel" id="p-notes">
+  <section class="band">
+    <div class="band-head"><h2>Notes</h2>
+      <span class="hint"><button class="btn sm" id="new-note" type="button">New note</button></span></div>
+    <div class="notes">
+      <div class="note-list" id="note-list"></div>
+      <div class="note-pane">
+        <div class="card note-blank" id="note-blank">
+          <h3>Nothing open</h3>
+          <p>Pick a note from the list, or start a new one.</p>
+          <button class="btn sm" id="blank-new" type="button">New note</button>
+        </div>
+        <div class="note-edit" id="note-edit" hidden>
+          <input type="text" id="note-title" placeholder="Untitled note">
+          <textarea id="note-body" placeholder="Formulas, mistakes to avoid, current affairs — anything worth keeping."></textarea>
+          <div class="note-foot">
+            <span class="saved" id="note-saved">&nbsp;</span>
+            <button class="btn ghost sm" id="del-note" type="button">Delete</button>
+            <button class="btn ghost sm" id="close-note" type="button">Close</button>
+            <button class="btn sm" id="save-note" type="button" disabled>Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== BACKUP ===== -->
+<div class="panel" id="p-data">
+  <section class="band">
+    <div class="band-head"><h2>Backup</h2></div>
+    <div class="card pad">
+      <div class="toolbar" style="margin-top:0">
+        <button class="btn ghost sm" id="csv-btn" type="button">Mocks CSV</button>
+        <button class="btn ghost sm" id="study-csv-btn" type="button">Study time CSV</button>
+        <button class="btn ghost sm" id="export-btn" type="button">Export everything</button>
+        <button class="btn ghost sm" id="import-btn" type="button">Restore backup</button>
+        <input type="file" id="import-file" accept="application/json" hidden>
+      </div>
+      <p class="status" id="storage-note"></p>
+    </div>
+
+    <div class="card pad" id="sync-card" style="margin-top:14px">
+      <div class="band-head" style="margin-bottom:8px"><h2>Sync</h2></div>
+      <p class="status" id="sync-off" hidden>Cross-device sync isn't configured for this build. Add a Supabase project URL and anon key to <code>.env</code> (see the README) to turn it on.</p>
+
+      <div id="sync-auth" hidden>
+        <div class="row" style="align-items:flex-end;gap:10px">
+          <div class="field" style="flex:1 1 240px"><label>Email</label>
+            <input type="email" id="sync-email" autocomplete="email" placeholder="you@example.com"></div>
+          <button class="btn sm" type="button" id="sync-signin">Send sign-in link</button>
+        </div>
+        <p class="status">A one-time magic link is emailed to you — no password. Open it, then return to this tab.</p>
+      </div>
+
+      <div id="sync-panel" hidden>
+        <p class="status" id="sync-who"></p>
+        <div class="toolbar" style="margin-top:10px">
+          <button class="btn sm" type="button" id="sync-push">Push to cloud</button>
+          <button class="btn ghost sm" type="button" id="sync-pull">Pull from cloud</button>
+          <button class="btn ghost sm" type="button" id="sync-out">Sign out</button>
+        </div>
+        <p class="status" id="sync-last"></p>
+      </div>
+
+      <p class="status" id="sync-msg" hidden></p>
+    </div>
+  </section>
+</div>
+
+</div>
+<footer class="foot">
+  Made with <svg viewBox="0 0 24 24" aria-label="love"><path d="M12 21s-8-4.9-8-10.4A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 8 3.6C20 16.1 12 21 12 21z"/></svg> for <b>Shreya</b>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
