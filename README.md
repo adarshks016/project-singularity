@@ -29,13 +29,9 @@ git remote add origin https://github.com/<you>/project-singularity.git
 git push -u origin main
 ```
 
-Then either:
-
-- **Cloudflare Pages** — connect the repo, build command `npm run build`, output `dist`.
-- **GitHub Pages** — Settings → Pages → Source: GitHub Actions. The included
-  workflow builds and deploys on every push to `main`. For a project page
-  (`you.github.io/project-singularity`), set `base: "/project-singularity/"`
-  in `vite.config.js`.
+Then deploy with **Cloudflare Pages** — connect the repo, set the build
+command to `npm run build` and the output directory to `dist`. This works
+with a private repo on the free tier, so no GitHub Pages workflow is needed.
 
 ## Layout
 
