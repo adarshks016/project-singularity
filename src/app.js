@@ -826,7 +826,23 @@ function paintDial(){
   $("start-btn").textContent = timer.running ? "Pause" : (left < total ? "Resume" : "Start");
   $("stop-btn").disabled = (!timer.running && left >= total);
 }
+var setupFilled = false;
+function renderTimerSetup(){
+  var s = $("timer-setup"); if(!s) return;
+  var need = state.exams.length === 0;
+  s.hidden = !need;
+  $("subjects").hidden = need;
+  $("timer-meta").hidden = need;
+  if(need && !setupFilled){
+    $("setup-preset").innerHTML = Object.keys(PRESETS).filter(function(k){ return k !== "custom"; })
+      .map(function(k){ return '<option value="'+k+'">'+esc(PRESETS[k].label)+'</option>'; }).join("");
+    setupFilled = true;
+  }
+  var wrap = $("setup-signin-wrap");
+  if(wrap) wrap.hidden = !(need && syncEnabled && !syncUser);
+}
 function renderTimer(){
+  renderTimerSetup();
   $("modes").innerHTML = Object.keys(MODES).map(function(m){
     return '<button type="button" data-m="'+m+'" class="'+(timer.mode===m?"on":"")+'">'+MODES[m].label+' '+modeMins(m)+'</button>';
   }).join("");
@@ -864,6 +880,15 @@ $("subjects").addEventListener("click", function(e){
   var b = e.target.closest(".subj"); if(!b) return;
   timer.subj = b.getAttribute("data-k"); save(); renderTimer();
 });
+$("setup-go").addEventListener("click", function(){
+  var k = $("setup-preset").value, p = PRESETS[k]; if(!p) return;
+  var ex = makeExam(p.label, k);
+  state.exams.push(ex); state.activeExam = ex.id;
+  save(); refreshSelectors(); renderTimer(); renderExams(); buildNotifs();
+  toast("Set up " + p.label);
+});
+$("setup-custom").addEventListener("click", function(){ showTab("mocks"); openNewExam(true); });
+$("setup-signin").addEventListener("click", function(){ if($("acct")) $("acct").click(); else showTab("data"); });
 $("start-btn").addEventListener("click", function(){
   if(timer.running){
     timer.left = Math.max(0, timer.endsAt - Date.now()); timer.running = false;
@@ -1347,6 +1372,13 @@ $("study-csv-btn").addEventListener("click", function(){
   download("study-time.csv", rows.map(function(r){ return r.map(cell).join(","); }).join("\n"), "text/csv;charset=utf-8");
 });
 $("export-btn").addEventListener("click", function(){ download("project-singularity-backup.json", JSON.stringify(snapshot(), null, 2), "application/json"); });
+$("reset-all").addEventListener("click", function(){
+  if(!confirm("Start fresh? This erases all exams, mocks, study sessions, notes and settings on THIS device. If you're signed in, your cloud copy is untouched. This can't be undone.")) return;
+  try{ if(db) db.transaction("kv","readwrite").objectStore("kv").delete("state"); }catch(e){}
+  try{ localStorage.removeItem("singularity." + STORE); }catch(e){}
+  try{ localStorage.removeItem(SYNC_META); }catch(e){}
+  location.reload();
+});
 $("import-btn").addEventListener("click", function(){ $("import-file").click(); });
 $("import-file").addEventListener("change", function(e){
   var f = e.target.files && e.target.files[0]; if(!f) return;

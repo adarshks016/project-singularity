@@ -169,8 +169,18 @@
       <button class="btn ghost" id="stop-btn" type="button">Stop</button>
       <button class="btn ghost" id="reset-btn" type="button">Reset</button>
     </div>
+    <div class="timer-setup" id="timer-setup" hidden>
+      <h3>Which exam are you preparing for?</h3>
+      <p>Pick your exam — your timer subjects, mocks and analytics all follow it. You can add more anytime.</p>
+      <div class="setup-row">
+        <select id="setup-preset" aria-label="Exam"></select>
+        <button class="btn sm" id="setup-go" type="button">Start preparing</button>
+      </div>
+      <p class="setup-alt"><button class="linkbtn" id="setup-custom" type="button">Build a custom exam instead</button></p>
+      <p class="setup-alt" id="setup-signin-wrap" hidden>Want it saved across devices? <button class="linkbtn" id="setup-signin" type="button">Sign in</button></p>
+    </div>
     <div class="subjects" id="subjects"></div>
-    <div class="timer-meta">
+    <div class="timer-meta" id="timer-meta">
       <select id="timer-exam" aria-label="Exam"></select>
       <button class="tod" id="tod-btn" type="button"><i>☀</i><span id="tod-label">Day</span></button>
       <span class="len"><label for="flen">Focus</label><input type="number" id="flen" min="5" max="180" step="5" value="25"><span>min</span></span>
@@ -401,6 +411,9 @@
         <input type="file" id="import-file" accept="application/json" hidden>
       </div>
       <p class="status" id="storage-note"></p>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--rule)">
+        <button class="btn ghost sm" id="reset-all" type="button">Start fresh — erase local data</button>
+      </div>
     </div>
 
     <div class="card pad" id="sync-card" style="margin-top:14px">
