@@ -1,5 +1,5 @@
 import { SEED_VIDEOS } from "./data/seed.videos.js";
-import { syncPush, syncPull, syncEnabled, signInWithEmail, signOut, currentUser } from "./sync/supabase.js";
+import { syncPush, syncPull, syncEnabled, signUp, signIn, signOut, currentUser } from "./sync/supabase.js";
 
 export function boot() {
 var STORE = "v1";
@@ -1488,15 +1488,25 @@ function autoPush(){
   }, 1500);
 }
 if(syncEnabled){
-  $("sync-signin").addEventListener("click", function(){
+  var doAuth = function(fn, verb){
     var email = ($("sync-email").value || "").trim();
+    var pass = $("sync-pass").value || "";
     if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ toast("Enter a valid email"); return; }
-    var btn = $("sync-signin"); btn.disabled = true; syncMsg("Sending…");
-    signInWithEmail(email).then(function(){
-      syncMsg("Sign-in link sent to " + email + ". Open it, then come back to this tab.");
-    }).catch(function(e){ syncMsg("Could not send the link: " + (e && e.message || e), true); })
-      .then(function(){ btn.disabled = false; });
-  });
+    if(pass.length < 6){ toast("Password must be at least 6 characters"); return; }
+    $("sync-signin").disabled = true; $("sync-signup").disabled = true; syncMsg(verb + "…");
+    fn(email, pass).then(function(){ return currentUser(); }).then(function(u){
+      if(u){
+        syncUser = u; $("sync-pass").value = ""; renderSync(); syncMsg("");
+        toast("Signed in"); autoSyncOnSignin();
+      } else {
+        /* only happens if email confirmation is still on in Supabase */
+        syncMsg("Account created. Confirm it from your email, then sign in — or turn off email confirmation in Supabase.", false);
+      }
+    }).catch(function(e){ syncMsg((e && e.message) || String(e), true); })
+      .then(function(){ $("sync-signin").disabled = false; $("sync-signup").disabled = false; });
+  };
+  $("sync-signin").addEventListener("click", function(){ doAuth(signIn, "Signing in"); });
+  $("sync-signup").addEventListener("click", function(){ doAuth(signUp, "Creating account"); });
   $("sync-out").addEventListener("click", function(){
     signOut().then(function(){}).catch(function(){}).then(function(){
       syncUser = null; renderSync(); syncMsg("Signed out on this device.");

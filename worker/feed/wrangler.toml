@@ -6,8 +6,6 @@ compatibility_date = "2024-11-01"
 [triggers]
 crons = ["0 */3 * * *"]
 
-# Cached postings live here. Create the namespace and paste its id below:
-#   npx wrangler kv namespace create FEED
 [[kv_namespaces]]
 binding = "FEED"
 id = "affc2e6a09044f06a4b6c13c04c68029"

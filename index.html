@@ -423,12 +423,17 @@
       <p class="status" id="sync-off" hidden>Cross-device sync isn't configured for this build. Add a Supabase project URL and anon key to <code>.env</code> (see the README) to turn it on.</p>
 
       <div id="sync-auth" hidden>
-        <div class="row" style="align-items:flex-end;gap:10px">
-          <div class="field" style="flex:1 1 240px"><label>Email</label>
+        <div class="row" style="gap:10px">
+          <div class="field" style="flex:1 1 200px"><label>Email</label>
             <input type="email" id="sync-email" autocomplete="email" placeholder="you@example.com"></div>
-          <button class="btn sm" type="button" id="sync-signin">Send sign-in link</button>
+          <div class="field" style="flex:1 1 160px"><label>Password</label>
+            <input type="password" id="sync-pass" autocomplete="current-password" placeholder="At least 6 characters"></div>
         </div>
-        <p class="status">A one-time magic link is emailed to you — no password. Open it, then return to this tab.</p>
+        <div class="toolbar" style="margin-top:10px">
+          <button class="btn sm" type="button" id="sync-signin">Sign in</button>
+          <button class="btn ghost sm" type="button" id="sync-signup">Create account</button>
+        </div>
+        <p class="status">Use the same email and password on any device — that's how your data follows you. No magic links, no emails.</p>
       </div>
 
       <div id="sync-panel" hidden>

@@ -20,11 +20,20 @@ export async function currentUser() {
   return data?.user ?? null;
 }
 
-export async function signInWithEmail(email) {
+export async function signUp(email, password) {
   const db = await getClient();
   if (!db) throw new Error("Sync is not configured");
-  const { error } = await db.auth.signInWithOtp({ email });
+  const { data, error } = await db.auth.signUp({ email, password });
   if (error) throw error;
+  return data;
+}
+
+export async function signIn(email, password) {
+  const db = await getClient();
+  if (!db) throw new Error("Sync is not configured");
+  const { data, error } = await db.auth.signInWithPassword({ email, password });
+  if (error) throw error;
+  return data;
 }
 
 export async function signOut() {
