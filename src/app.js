@@ -74,6 +74,7 @@ function save(){
     if(useIDB && db) idbSet(s);
     try{ localStorage.setItem("singularity." + STORE, JSON.stringify(s)); }catch(e){}
   }, 120);
+  autoPush();
 }
 function applyStored(s){
   if(!s) return;
@@ -826,10 +827,11 @@ function paintDial(){
   $("start-btn").textContent = timer.running ? "Pause" : (left < total ? "Resume" : "Start");
   $("stop-btn").disabled = (!timer.running && left >= total);
 }
-var setupFilled = false;
+var setupFilled = false, setupForced = false;
 function renderTimerSetup(){
   var s = $("timer-setup"); if(!s) return;
-  var need = state.exams.length === 0;
+  var hasExams = state.exams.length > 0;
+  var need = !hasExams || setupForced;
   s.hidden = !need;
   $("subjects").hidden = need;
   $("timer-meta").hidden = need;
@@ -838,6 +840,8 @@ function renderTimerSetup(){
       .map(function(k){ return '<option value="'+k+'">'+esc(PRESETS[k].label)+'</option>'; }).join("");
     setupFilled = true;
   }
+  $("setup-title").textContent = hasExams ? "Add another exam" : "Which exam are you preparing for?";
+  $("setup-cancel").hidden = !hasExams;
   var wrap = $("setup-signin-wrap");
   if(wrap) wrap.hidden = !(need && syncEnabled && !syncUser);
 }
@@ -884,11 +888,14 @@ $("setup-go").addEventListener("click", function(){
   var k = $("setup-preset").value, p = PRESETS[k]; if(!p) return;
   var ex = makeExam(p.label, k);
   state.exams.push(ex); state.activeExam = ex.id;
+  setupForced = false;
   save(); refreshSelectors(); renderTimer(); renderExams(); buildNotifs();
   toast("Set up " + p.label);
 });
-$("setup-custom").addEventListener("click", function(){ showTab("mocks"); openNewExam(true); });
+$("setup-custom").addEventListener("click", function(){ setupForced = false; showTab("mocks"); openNewExam(true); });
+$("setup-cancel").addEventListener("click", function(){ setupForced = false; renderTimer(); });
 $("setup-signin").addEventListener("click", function(){ if($("acct")) $("acct").click(); else showTab("data"); });
+$("add-exam-btn").addEventListener("click", function(){ setupForced = true; renderTimer(); });
 $("start-btn").addEventListener("click", function(){
   if(timer.running){
     timer.left = Math.max(0, timer.endsAt - Date.now()); timer.running = false;
@@ -1436,12 +1443,49 @@ function renderSync(){
   $("sync-panel").hidden = !signedIn;
   if(signedIn){
     $("sync-who").textContent = "Signed in as " + (syncUser.email || "your account");
-    $("sync-last").textContent = "Last synced " + relTime(syncMeta().at);
+    $("sync-last").textContent = "Auto-saving to your account · last synced " + relTime(syncMeta().at);
   }
 }
 function refreshSyncUser(){
   if(!syncEnabled){ renderSync(); return; }
-  currentUser().then(function(u){ syncUser = u; renderSync(); }).catch(function(){ syncUser = null; renderSync(); });
+  currentUser().then(function(u){
+    var was = !!syncUser;
+    syncUser = u; renderSync();
+    if(u && !was) autoSyncOnSignin();      /* just signed in (or a saved session loaded) */
+    if(!u) autoSyncReady = false;
+  }).catch(function(){ syncUser = null; autoSyncReady = false; renderSync(); });
+}
+/* ---- auto-save to the cloud once signed in: pull first, then push on every change ---- */
+var autoSyncReady = false, autoPushTimer = null;
+function autoSyncOnSignin(){
+  if(!syncEnabled || !syncUser) return;
+  syncPull().then(function(res){
+    if(res.ok && res.payload){
+      /* adopt the account's data; pull-before-push means a blank device never clobbers the cloud */
+      applyStored(res.payload);
+      setSyncMeta({ at: new Date().toISOString(), remoteAt: res.updatedAt || "" });
+      save();                              /* persist locally; autoPush is skipped, ready still false */
+      refreshSelectors(); renderTimer(); renderExams(); renderNotes(); renderApps(); renderVideos(); renderAmb(); renderWater(); buildNotifs();
+      if(state.dockUrl){ $("dock-url").value = state.dockUrl; }
+      renderSync();
+      autoSyncReady = true;
+      toast("Loaded your saved data");
+    } else if(res.ok){
+      autoSyncReady = true; autoPush();    /* cloud empty — upload what's on this device */
+    } else {
+      autoSyncReady = true;                /* pull failed (offline); allow pushes to retry later */
+    }
+  }).catch(function(){ autoSyncReady = true; });
+}
+function autoPush(){
+  if(!syncEnabled || !syncUser || !autoSyncReady) return;
+  clearTimeout(autoPushTimer);
+  autoPushTimer = setTimeout(function(){
+    var now = new Date().toISOString();
+    syncPush(snapshot()).then(function(res){
+      if(res && res.ok){ setSyncMeta({ at: now, remoteAt: now }); renderSync(); }
+    }).catch(function(){});
+  }, 1500);
 }
 if(syncEnabled){
   $("sync-signin").addEventListener("click", function(){
