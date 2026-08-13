@@ -350,6 +350,13 @@
       </div>
     </div>
     <div id="apps-list" style="margin-top:12px"></div>
+
+    <div class="card pad" id="feed-card" style="margin-top:16px">
+      <div class="band-head" style="margin-bottom:8px"><h2>Latest notifications</h2>
+        <span class="hint" id="feed-meta">&nbsp;</span></div>
+      <p class="status" id="feed-off" hidden>Live exam notifications aren't set up yet. Deploy the feed worker in <code>worker/feed/</code> and set <code>VITE_FEED_URL</code> to switch this on.</p>
+      <div id="feed-list"></div>
+    </div>
   </section>
 </div>
 

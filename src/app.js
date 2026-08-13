@@ -149,7 +149,7 @@ function showTab(name){
   if(name === "mocks") renderExams();
   if(name !== "notes") commitNote(true);
   if(name === "notes") renderNotes();
-  if(name === "apps") renderApps();
+  if(name === "apps"){ renderApps(); renderFeed(); }
   if(name === "watch") renderVideos();
   if(name === "data") renderSync();
 }
@@ -1490,6 +1490,43 @@ $("acct").addEventListener("click", function(){
   if(card) card.scrollIntoView({behavior:"smooth", block:"center"});
   if(!syncUser){ var em = $("sync-email"); if(em) setTimeout(function(){ em.focus(); }, 320); }
 });
+/* ---- exam-notification feed (Exams applied tab) ---- */
+/* Reads cached postings from our own Cloudflare Worker; the browser can't fetch
+   the source site directly (CORS), so the Worker fetches the RSS server-side. */
+var FEED_URL = (import.meta.env.VITE_FEED_URL || "").trim();
+var feedEnabled = !!FEED_URL;
+var feedCache = null, feedFetchedAt = 0;
+function feedItemHTML(it){
+  var d = it.date ? new Date(it.date) : null;
+  var when = d && isFinite(d.getTime()) ? d.toLocaleDateString() : "";
+  return '<a class="feed-item" href="'+esc(it.link||"#")+'" target="_blank" rel="noopener">'+
+    '<b>'+esc(it.title||"Untitled")+'</b>'+
+    '<span>'+esc(it.source||"SarkariResult")+(when ? ' · '+esc(when) : '')+'</span></a>';
+}
+function paintFeed(items){
+  if(!$("feed-list")) return;
+  if(!items.length){ $("feed-list").innerHTML = '<p class="status">Nothing new right now.</p>'; $("feed-meta").innerHTML = "&nbsp;"; return; }
+  $("feed-list").innerHTML = items.slice(0,20).map(feedItemHTML).join("");
+  $("feed-meta").textContent = items.length + " latest";
+}
+function renderFeed(force){
+  if(!$("feed-card")) return;
+  if(!feedEnabled){ $("feed-off").hidden = false; $("feed-list").innerHTML = ""; $("feed-meta").innerHTML = "&nbsp;"; return; }
+  $("feed-off").hidden = true;
+  if(feedCache) paintFeed(feedCache);
+  if(feedCache && (Date.now() - feedFetchedAt < 5*60000) && !force) return;   /* 5-min throttle */
+  $("feed-meta").textContent = "Refreshing…";
+  fetch(FEED_URL, {headers:{accept:"application/json"}})
+    .then(function(r){ return r.ok ? r.json() : Promise.reject(new Error("HTTP "+r.status)); })
+    .then(function(data){
+      var items = Array.isArray(data) ? data : (data && data.items) || [];
+      feedCache = items; feedFetchedAt = Date.now(); paintFeed(items);
+    })
+    .catch(function(){
+      $("feed-meta").textContent = "Couldn't load — try later";
+      if(!feedCache) $("feed-list").innerHTML = '<p class="status">No notifications loaded yet.</p>';
+    });
+}
 $("tabs").querySelectorAll("button").forEach(function(b){
   b.addEventListener("click", function(){ showTab(b.getAttribute("data-t")); });
 });
