@@ -1,4 +1,3 @@
-import { SEED_MOCKS as SEED } from "./data/seed.mocks.js";
 import { SEED_VIDEOS } from "./data/seed.videos.js";
 import { syncPush, syncPull, syncEnabled, signInWithEmail, signOut, currentUser } from "./sync/supabase.js";
 
@@ -166,26 +165,6 @@ function makeExam(name, presetKey, customSections, correct, penalty){
     })
   };
 }
-function seedIfEmpty(){
-  if(state.exams.length) return;
-  var ex = makeExam("SSC CGL 2026", "cgl");
-  state.exams.push(ex);
-  state.activeExam = ex.id;
-  if(state.mocks.length) return;
-  SEED.forEach(function(row, i){
-    var secs = {};
-    for(var k in row.s){
-      var v = row.s[k];
-      secs[k] = (typeof v.m === "number") ? {m:v.m} : {c:v.c, w:v.w};
-    }
-    var m = {id:"seed"+i, examId:ex.id, name:row.n, date:row.d || "", type:row.t, sections:secs, seq:i};
-    if(typeof row.p === "number") m.pct = row.p;
-    if(row.r) m.note = row.r;
-    state.mocks.push(m);
-  });
-  sortMocks();
-}
-
 function renderExams(){
   var host = $("exam-list");
   if(!state.exams.length){
@@ -1539,7 +1518,6 @@ openDB().then(function(){
     try{ var ls = localStorage.getItem("singularity." + STORE); if(ls) s = JSON.parse(ls); }catch(e){}
   }
   applyStored(s);
-  seedIfEmpty();
   if(!state.videos.length) state.videos = SEED_VIDEOS.slice();
   if(timer.running){
     if(timer.endsAt <= Date.now()) completeTimer(true);

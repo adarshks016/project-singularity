@@ -10,4 +10,4 @@ crons = ["0 */3 * * *"]
 #   npx wrangler kv namespace create FEED
 [[kv_namespaces]]
 binding = "FEED"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "affc2e6a09044f06a4b6c13c04c68029"
