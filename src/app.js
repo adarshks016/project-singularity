@@ -1507,6 +1507,14 @@ if(syncEnabled){
   };
   $("sync-signin").addEventListener("click", function(){ doAuth(signIn, "Signing in"); });
   $("sync-signup").addEventListener("click", function(){ doAuth(signUp, "Creating account"); });
+  $("sync-show").addEventListener("click", function(){
+    var p = $("sync-pass"), showing = p.type === "text";
+    p.type = showing ? "password" : "text";
+    this.textContent = showing ? "Show" : "Hide";
+  });
+  ["sync-email","sync-pass"].forEach(function(id){
+    $(id).addEventListener("keydown", function(e){ if(e.key === "Enter"){ e.preventDefault(); $("sync-signin").click(); } });
+  });
   $("sync-out").addEventListener("click", function(){
     signOut().then(function(){}).catch(function(){}).then(function(){
       syncUser = null; renderSync(); syncMsg("Signed out on this device.");
