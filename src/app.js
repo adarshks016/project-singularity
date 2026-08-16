@@ -953,7 +953,7 @@ function renderWater(){
     out += '<button type="button" class="glass'+(i < w.n ? " on" : "")+'" data-g="'+(i+1)+'" aria-label="Glass '+(i+1)+'">'+
       '<svg viewBox="0 0 24 30"><path class="cup" d="M4 3h16l-2 24H6L4 3z"/>'+
       '<clipPath id="cl'+i+'"><path d="M4 3h16l-2 24H6L4 3z"/></clipPath>'+
-      '<rect class="fill" clip-path="url(#cl'+i+')" x="2" y="6" width="20" height="24"/></svg></button>';
+      '<g clip-path="url(#cl'+i+')"><rect class="fill" x="2" y="6" width="20" height="24"/></g></svg></button>';
   }
   $("glasses").innerHTML = out;
 }

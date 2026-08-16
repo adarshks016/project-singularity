@@ -234,7 +234,7 @@
 .glass{border:none;background:transparent;cursor:pointer;padding:0;transition:transform .2s var(--ease)}
 .glass:hover{transform:translateY(-2px)}
 .glass svg{width:100%;height:auto;display:block;overflow:visible}
-.glass .cup{fill:none;stroke:rgba(61,46,34,.28);stroke-width:1.8;stroke-linejoin:round}
+.glass .cup,.water-mini .cup{fill:none;stroke:rgba(61,46,34,.28);stroke-width:1.8;stroke-linejoin:round}
 .glass .fill{fill:#7FA8C4;transform:translateY(26px);transition:transform .45s var(--ease);opacity:.85}
 .glass.on .fill{transform:translateY(0)}
 .glass.on .cup{stroke:#5F87A6}
