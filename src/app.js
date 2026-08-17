@@ -1648,7 +1648,12 @@ openDB().then(function(){
     TOD.forEach(function(t){ scene.classList.toggle("t-"+t.k, t.k === key); });
     var cur = TOD.filter(function(t){ return t.k === key; })[0];
     $("tod-btn").querySelector("i").textContent = cur.icon;
-    $("tod-label").textContent = cur.label + (todOverride ? "" : "");
+    $("tod-label").textContent = cur.label;
+    /* say so when the scene is pinned, otherwise it looks like the clock stopped working */
+    $("tod-btn").classList.toggle("pinned", !!todOverride);
+    $("tod-btn").title = todOverride
+      ? cur.label + " — pinned. Tap to keep cycling; it follows the clock again on the last step."
+      : cur.label + " — following the clock. Tap to pin a different time.";
   }
   $("tod-btn").addEventListener("click", function(){
     var key = todOverride || autoTod();
