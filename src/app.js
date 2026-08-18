@@ -971,7 +971,8 @@ $("water-undo").addEventListener("click", function(){
 });
 function videoId(url){
   var s = String(url||"").trim();
-  var m = s.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
+  /* study-with-me streams are usually /live/ links, so that form has to work too */
+  var m = s.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/|\/live\/|\/v\/)([A-Za-z0-9_-]{11})/);
   if(m) return m[1];
   if(/^[A-Za-z0-9_-]{11}$/.test(s)) return s;
   return null;
