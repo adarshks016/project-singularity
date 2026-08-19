@@ -97,6 +97,7 @@ function uid(p){ return (p||"") + Date.now().toString(36) + Math.random().toStri
 function clamp(n,lo,hi){ n = isFinite(n) ? n : 0; return Math.max(lo, Math.min(hi, n)); }
 function fmt(n){ var r = Math.round(n*10)/10; return (r % 1 === 0) ? String(r) : r.toFixed(1); }
 function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function plural(n, word){ return n + " " + word + (n === 1 ? "" : "s"); }
 function dayKey(d){ return new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,10); }
 function today(){ return dayKey(new Date()); }
 function examOf(id){ for(var i=0;i<state.exams.length;i++){ if(state.exams[i].id === id) return state.exams[i]; } return null; }
@@ -1395,8 +1396,17 @@ $("import-file").addEventListener("change", function(e){
     try{
       var d = JSON.parse(r.result);
       if(!d || !Array.isArray(d.exams)) throw new Error("bad");
+      /* restoring replaces everything, and auto-save then pushes that over the cloud
+         copy on every other device — so make it as deliberate as "Start fresh" */
+      if(!confirm("Restore this backup?\n\nIt holds "+plural(d.exams.length,"exam")+", "+
+                  plural((d.mocks||[]).length,"mock")+" and "+plural((d.notes||[]).length,"note")+
+                  ".\n\nThis replaces what's on this device now ("+plural(state.exams.length,"exam")+", "+
+                  plural(state.mocks.length,"mock")+", "+plural(state.notes.length,"note")+
+                  "). If you're signed in, the restored copy also syncs to your other devices. This can't be undone.")){
+        e.target.value = ""; return;
+      }
       applyStored(d); save(); refreshSelectors(); renderExams(); renderTimer(); renderNotes();
-      toast("Restored "+state.exams.length+" exams, "+state.mocks.length+" mocks");
+      toast("Restored "+plural(state.exams.length,"exam")+", "+plural(state.mocks.length,"mock"));
     }catch(err){ toast("That isn't a Project Singularity backup"); }
     e.target.value = "";
   };
