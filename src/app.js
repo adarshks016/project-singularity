@@ -1120,8 +1120,10 @@ $("dock-toggle").addEventListener("click", function(){
 });
 $("dock-go").addEventListener("click", function(){
   var u = $("dock-url").value.trim();
-  var sp = u.match(/open\.spotify\.com\/(playlist|album|track|episode|show)\/([A-Za-z0-9]+)/);
-  var yt = u.match(/[?&]list=([A-Za-z0-9_-]+)/) || (videoId(u) ? [null, null] : null);
+  /* share links carry a locale segment (open.spotify.com/intl-hi/playlist/...) and the
+     desktop app's "Copy Spotify URI" gives spotify:playlist:id — both are valid */
+  var sp = u.match(/open\.spotify\.com\/(?:intl-[A-Za-z-]+\/)?(playlist|album|track|episode|show)\/([A-Za-z0-9]+)/)
+        || u.match(/^spotify:(playlist|album|track|episode|show):([A-Za-z0-9]+)/);
   if(sp){
     $("dock-embed").innerHTML = '<iframe style="border-radius:14px" src="https://open.spotify.com/embed/'+sp[1]+'/'+sp[2]+
       '?utm_source=generator" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture" loading="lazy"></iframe>';
