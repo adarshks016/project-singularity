@@ -306,6 +306,28 @@ function paintEntry(exId, box){
       '<button class="btn ghost sm" type="button" data-act="cancel-entry">Cancel</button>'+
       '<button class="btn" type="button" data-act="save-entry"'+(att?"":" disabled")+'>Save mock</button></div>';
 }
+/* Update only the derived numbers. Repainting the whole entry form mid-edit
+   destroys the input being typed into and drops focus to the body, which makes
+   any two-digit score impossible to type. */
+function syncEntryTotals(exId, box){
+  var ex = examOf(exId), d = draft[exId];
+  var shown = d.type === "full" ? ex.sections : ex.sections.filter(function(S){ return S.key === d.section; });
+  var total = 0, att = 0, corr = 0;
+  shown.forEach(function(S){
+    var v = d.vals[S.key];
+    total += v.c*ex.correct - v.w*ex.penalty; att += v.c+v.w; corr += v.c;
+    var step = box.querySelector('.step[data-k="'+S.key+'"][data-f="c"]');
+    var row = step && step.closest(".srow"); if(!row) return;
+    row.querySelector(".skip").textContent = S.q - v.c - v.w;
+    row.querySelector(".rs").textContent = fmt(v.c*ex.correct - v.w*ex.penalty);
+  });
+  var tot = box.querySelector(".entry-foot .tot .n");
+  if(tot) tot.textContent = fmt(total);
+  var caps = box.querySelectorAll(".entry-foot .tot .eyebrow");
+  if(caps.length > 1) caps[1].textContent = att + " attempted · " + (att?Math.round(corr/att*100):0) + "% accuracy";
+  var sv = box.querySelector('[data-act="save-entry"]');
+  if(sv) sv.disabled = !att;
+}
 
 /* delegated events for the mocks tab */
 $("p-mocks").addEventListener("click", function(e){
@@ -383,10 +405,14 @@ $("p-mocks").addEventListener("input", function(e){
     var step = e.target.closest(".step"), k = step.getAttribute("data-k"), f = step.getAttribute("data-f");
     var ex = examOf(exId), S = ex.sections.filter(function(x){ return x.key === k; })[0];
     var d = draft[exId], other = f === "c" ? "w" : "c";
-    var v = clamp(Math.round(parseInt(e.target.value,10)||0), 0, S.q);
+    var raw = parseInt(e.target.value, 10);
+    var v = clamp(Math.round(isFinite(raw) ? raw : 0), 0, S.q);
     if(v + d.vals[k][other] > S.q) v = S.q - d.vals[k][other];
     d.vals[k][f] = v;
-    stashMeta(exId, box); paintEntry(exId, box);
+    /* only rewrite the field when the number was genuinely out of range —
+       correcting it on every keystroke fights the person typing */
+    if(isFinite(raw) && raw !== v) e.target.value = v;
+    stashMeta(exId, box); syncEntryTotals(exId, box);
   }
 });
 function stashMeta(exId, box){
