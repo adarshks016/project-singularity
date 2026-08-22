@@ -657,7 +657,6 @@ function bindHover(){
   function move(clientX){
     var box = svg.getBoundingClientRect();
     var vx = (clientX - box.left) / box.width * 720;
-    var box2 = svg.getBoundingClientRect();
     var best = null, bd = 1e9;
     chartPts.forEach(function(p){ var d = Math.abs(p.x - vx); if(d < bd){ bd = d; best = p; } });
     if(!best) return;
@@ -672,9 +671,15 @@ function bindHover(){
     tip.style.left = clamp(px, 60, box.width - 60) + "px";
     tip.style.top = (best.y / 250 * box.height - 12) + "px";
   }
+  function hide(){ g.setAttribute("opacity","0"); tip.hidden = true; }
   hit.addEventListener("mousemove", function(e){ move(e.clientX); });
+  hit.addEventListener("touchstart", function(e){ if(e.touches[0]) move(e.touches[0].clientX); }, {passive:true});
   hit.addEventListener("touchmove", function(e){ if(e.touches[0]) move(e.touches[0].clientX); }, {passive:true});
-  hit.addEventListener("mouseleave", function(){ g.setAttribute("opacity","0"); tip.hidden = true; });
+  hit.addEventListener("mouseleave", hide);
+  /* touch never fires mouseleave, so without these the tooltip stays on screen
+     for good once a finger has touched the chart */
+  hit.addEventListener("touchend", hide);
+  hit.addEventListener("touchcancel", hide);
 }
 
 function renderStudy(){
