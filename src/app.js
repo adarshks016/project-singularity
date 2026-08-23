@@ -647,7 +647,7 @@ function renderChart(ex, series, max, withAvg){
 
   $("chart-legend").innerHTML = live.map(function(s){
     return '<span><i class="sw" style="background:'+s.hue+'"></i>'+esc(s.label)+' · '+s.values.length+'</span>';
-  }).join("") + (withAvg && live[0].values.length > 4 ? '<span><i class="sw avgline"></i>5-mock average</span>' : "");
+  }).join("") + (withAvg && live[0] && live[0].values.length > 4 ? '<span><i class="sw avgline"></i>5-mock average</span>' : "");
   bindHover();
 }
 
