@@ -90,6 +90,12 @@ function applyStored(s){
     timer.running = !!s.timer.running;
     timer.endsAt = s.timer.endsAt || 0;
     timer.left = typeof s.timer.left === "number" ? s.timer.left : state.focusLen*60000;
+    /* A deadline that ran out while the app was closed must not be banked as a
+       finished session — we have no idea whether the person kept studying, and
+       completing it here credits a full block to whatever day they reopen on. */
+    if(timer.running && timer.endsAt <= Date.now()){
+      timer.running = false; timer.endsAt = 0; timer.left = modeMs(timer.mode);
+    }
   }
 }
 var $ = function(id){ return document.getElementById(id); };
@@ -1657,10 +1663,9 @@ openDB().then(function(){
   }
   applyStored(s);
   if(!state.videos.length) state.videos = SEED_VIDEOS.slice();
-  if(timer.running){
-    if(timer.endsAt <= Date.now()) completeTimer(true);
-    else timer.left = timer.endsAt - Date.now();
-  }
+  /* applyStored has already stood down any timer whose deadline passed while
+     the app was closed, so anything still running has a future deadline */
+  if(timer.running) timer.left = timer.endsAt - Date.now();
   renderPresetSelect(); renderCustomRows(); refreshSelectors();
   renderTimer(); renderExams(); renderNotes(); renderApps(); renderVideos(); renderAmb(); renderWater(); buildNotifs();
   renderSync(); refreshSyncUser();
