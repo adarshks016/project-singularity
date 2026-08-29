@@ -31,7 +31,7 @@ var PRESETS = {
     {name:"English", q:30},{name:"Reasoning", q:35},{name:"Quantitative Aptitude", q:35}]}
 };
 var MODES = {focus:{label:"Focus"}, short:{label:"Short break"}, long:{label:"Long break"}};
-var state = {exams:[], mocks:[], sessions:[], notes:[], apps:[], videos:[], water:null, waterMin:false, dockUrl:"", focusLen:25, activeExam:null, activeNote:null};
+var state = {exams:[], mocks:[], sessions:[], notes:[], apps:[], videos:[], water:null, waterMin:false, dockUrl:"", ambVol:45, focusLen:25, activeExam:null, activeNote:null};
 var timer = {mode:"focus", running:false, endsAt:0, left:25*60000, subj:"general"};
 
 var db = null, useIDB = true;
@@ -62,7 +62,7 @@ function idbSet(v){
   try{ db.transaction("kv","readwrite").objectStore("kv").put(v, "state"); }catch(e){}
 }
 function snapshot(){
-  return {v:4, exams:state.exams, mocks:state.mocks, sessions:state.sessions, notes:state.notes, apps:state.apps, videos:state.videos, water:state.water, waterMin:state.waterMin, dockUrl:state.dockUrl,
+  return {v:4, exams:state.exams, mocks:state.mocks, sessions:state.sessions, notes:state.notes, apps:state.apps, videos:state.videos, water:state.water, waterMin:state.waterMin, dockUrl:state.dockUrl, ambVol:state.ambVol,
           focusLen:state.focusLen, activeExam:state.activeExam,
           timer:{mode:timer.mode, running:timer.running, endsAt:timer.endsAt, left:timer.left, subj:timer.subj}};
 }
@@ -81,6 +81,7 @@ function applyStored(s){
   ["exams","mocks","sessions","notes","apps","videos"].forEach(function(k){ if(Array.isArray(s[k])) state[k] = s[k]; });
   if(typeof s.focusLen === "number") state.focusLen = s.focusLen;
   if(typeof s.dockUrl === "string") state.dockUrl = s.dockUrl;
+  if(typeof s.ambVol === "number") state.ambVol = clamp(s.ambVol, 0, 100);
   if(s.water) state.water = s.water;
   if(typeof s.waterMin === "boolean") state.waterMin = s.waterMin;
   if(s.activeExam) state.activeExam = s.activeExam;
@@ -1088,6 +1089,7 @@ function stopAmb(){
   ambParts.forEach(function(n){ try{ n.stop(); }catch(e){} });
   ambParts = [];
   if(crackleTimer){ clearInterval(crackleTimer); crackleTimer = null; }
+  if(ambGain){ try{ ambGain.disconnect(); }catch(e){} ambGain = null; }
   ambKind = null;
   renderAmb();
 }
@@ -1097,7 +1099,7 @@ function playAmb(kind){
   if(actx.state === "suspended") actx.resume();
   stopAmb();
   ambGain = actx.createGain();
-  ambGain.gain.value = (+$("amb-vol").value || 45)/100 * .45;
+  ambGain.gain.value = clamp(parseInt($("amb-vol").value,10), 0, 100)/100 * .45;
   ambGain.connect(actx.destination);
 
   if(kind === "rain"){
@@ -1148,7 +1150,9 @@ $("amb").addEventListener("click", function(e){
   if(ambKind === k) stopAmb(); else playAmb(k);
 });
 $("amb-vol").addEventListener("input", function(){
-  if(ambGain) ambGain.gain.value = (+$("amb-vol").value)/100 * .45;
+  state.ambVol = clamp(parseInt($("amb-vol").value,10), 0, 100);
+  if(ambGain) ambGain.gain.value = state.ambVol/100 * .45;
+  save();
 });
 $("dock-toggle").addEventListener("click", function(){
   var b = $("dock-body");
@@ -1247,13 +1251,16 @@ $("ap-add").addEventListener("click", function(){
                    examOn:$("ap-exam").value || "", resultOn:"", marks:"", notes:""});
   $("ap-name").value = ""; $("ap-exam").value = "";
   save(); renderApps(); renderVideos(); renderAmb(); renderWater(); buildNotifs();
-  if(state.dockUrl){ $("dock-url").value = state.dockUrl; } toast("Added " + name);
+  if(state.dockUrl){ $("dock-url").value = state.dockUrl; }
+  $("amb-vol").value = state.ambVol;
+  toast("Added " + name);
 });
 $("apps-list").addEventListener("click", function(e){
   var id = e.target.getAttribute("data-del"); if(!id) return;
   state.apps = state.apps.filter(function(a){ return a.id !== id; });
   save(); renderApps(); renderVideos(); renderAmb(); renderWater(); buildNotifs();
   if(state.dockUrl){ $("dock-url").value = state.dockUrl; }
+  $("amb-vol").value = state.ambVol;
 });
 $("apps-list").addEventListener("change", function(e){
   var f = e.target.getAttribute("data-f"); if(!f) return;
@@ -1261,6 +1268,7 @@ $("apps-list").addEventListener("change", function(e){
   state.apps.forEach(function(a){ if(a.id === id) a[f] = e.target.value; });
   save(); renderApps(); renderVideos(); renderAmb(); renderWater(); buildNotifs();
   if(state.dockUrl){ $("dock-url").value = state.dockUrl; }
+  $("amb-vol").value = state.ambVol;
 });
 function buildNotifs(){
   var out = [];
@@ -1517,6 +1525,7 @@ function autoSyncOnSignin(){
       save();                              /* persist locally; autoPush is skipped, ready still false */
       refreshSelectors(); renderTimer(); renderExams(); renderNotes(); renderApps(); renderVideos(); renderAmb(); renderWater(); buildNotifs();
       if(state.dockUrl){ $("dock-url").value = state.dockUrl; }
+  $("amb-vol").value = state.ambVol;
       renderSync();
       autoSyncReady = true;
       toast("Loaded your saved data");
@@ -1603,6 +1612,7 @@ if(syncEnabled){
       setSyncMeta({ at: new Date().toISOString(), remoteAt: res.updatedAt || "" });
       refreshSelectors(); renderTimer(); renderExams(); renderNotes(); renderApps(); renderVideos(); renderAmb(); renderWater(); buildNotifs();
       if(state.dockUrl){ $("dock-url").value = state.dockUrl; }
+  $("amb-vol").value = state.ambVol;
       renderSync(); syncMsg("Pulled the cloud copy onto this device."); syncBusy = false;
     }).catch(function(e){ syncMsg("Pull failed: " + (e && e.message || e), true); syncBusy = false; });
   });
@@ -1670,6 +1680,7 @@ openDB().then(function(){
   renderTimer(); renderExams(); renderNotes(); renderApps(); renderVideos(); renderAmb(); renderWater(); buildNotifs();
   renderSync(); refreshSyncUser();
   if(state.dockUrl){ $("dock-url").value = state.dockUrl; }
+  $("amb-vol").value = state.ambVol;
   $("storage-note").textContent = (useIDB && db)
     ? "Stored in this browser's database. Not synced between devices — iOS Safari can clear it after 7 days without a visit, so export a backup weekly or add this page to your home screen."
     : "Stored in this browser only. Export a backup regularly.";
